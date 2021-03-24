@@ -11,6 +11,7 @@ import (
 )
 
 var cfg config
+var db database
 var help = cli.HelpCommand("print this message")
 
 var root = &cli.Command{
@@ -23,6 +24,7 @@ var root = &cli.Command{
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	check(cfg.fill())
+	check(db.fill())
 
 	check(cli.Root(
 		root,

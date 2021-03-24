@@ -13,13 +13,14 @@ var sync = &cli.Command{
 	Fn: func(ctx *cli.Context) error {
 		needroot()
 
-		for i, x := range cfg.Repositories {
+		for _, x := range cfg.Repositories {
 			fmt.Printf("Fetching %s...\n", x.Url)
 
 			var err error
 
-			if x.Path != "" {
-				r, err := git.PlainOpen(x.Path)
+			path, err := db.getrepopath(x.Url)
+			if err == nil {
+				r, err := git.PlainOpen(path)
 				if err != nil {
 					return err
 				}
@@ -38,8 +39,8 @@ var sync = &cli.Command{
 					URL: x.Url,
 				})
 
-				cfg.Repositories[i].Path = prefix
-				cfg.update()
+				db.addRepo(x.Url, prefix)
+				db.update()
 			}
 
 			if err != nil {

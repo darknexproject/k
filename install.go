@@ -8,7 +8,6 @@ var install = &cli.Command{
 	Fn: func(ctx *cli.Context) error {
 		needroot()
 
-
 		return nil
-	}
+	},
 }
