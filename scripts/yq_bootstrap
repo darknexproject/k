@@ -4,7 +4,7 @@ YQ_VER=4.6.2
 
 YQ_CMD=yq
 
-if ! command -v COMMAND &>/dev/null
+if ! command -v yq &>/dev/null
 then
   if [ ! -f /k/yq ]; then
     echo 'YQ is not found, downloading...'
