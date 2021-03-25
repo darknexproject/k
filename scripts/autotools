@@ -1,0 +1,51 @@
+#!/usr/bin/env zsh
+
+# ./build <pkgname> <pkgdir> <prefix>
+
+source $(dirname $0)/yq_bootstrap
+source /k/env.zsh
+
+i=0
+
+while true ; do
+  if [[ $($YQ_CMD eval ".files[$i]" "$2/build.compiled.yml") == "null" ]]; then
+    break
+  fi
+
+  folder=$($YQ_CMD eval ".files[$i].folder" "$2/build.compiled.yml")
+  if [[ $folder == "null" ]]; then
+    basename=$(basename "$($YQ_CMD eval ".files[$i].url" $2/build.compiled.yml)")
+    folder=$(echo $basename | sed "s/.tar.*//; s/.tgz//; s/.tar//; s/.zip//")
+  fi
+
+  cd $2/workdir/$folder
+  rm -rf build
+  mkdir build
+  cd build
+  
+  configureflags=$($YQ_CMD eval ".files[$i].autotools.configure" $2/build.compiled.yml)
+  if [[ $configure == "null" ]]; then
+    configureflags=""
+  fi
+
+  hosttriple=""
+  if [ ! -z $CHOST ]; then
+    hosttriple="--host=$CHOST"
+  fi
+
+  targettriple=""
+  if [ ! -z $CTARGET ]; then
+    targettriple="--target=$CTARGET"
+  fi
+
+  ../configure \
+    --prefix=$3/usr \
+    $hosttriple \
+    $targettriple \
+    CFLAGS=$CFLAGS \
+    CXXFLAGS=$CXXFLAGS
+  make $MAKEOPTS
+  make install DESTDIR="$2/destdir"
+
+  ((i++))
+done

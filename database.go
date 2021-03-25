@@ -7,18 +7,21 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type database struct {
-	Packages []struct {
-		Name    string   `yaml:"name"`
-		Prefix  string   `yaml:"prefix"`
-		Version string   `yaml:"version"`
-		Files   []string `yaml:"files"`
-	} `yaml:"packages"`
+type databaseRepo struct {
+	Url  string `yaml:"url"`
+	Path string `yaml:"localpath"`
+}
 
-	Repositories []struct {
-		Url  string `yaml:"url"`
-		Path string `yaml:"localpath"`
-	} `yaml:"repositories"`
+type databasePackage struct {
+	Name    string   `yaml:"name"`
+	Prefix  string   `yaml:"prefix"`
+	Version string   `yaml:"version"`
+	Files   []string `yaml:"files"`
+}
+
+type database struct {
+	Packages     []databasePackage `yaml:"packages"`
+	Repositories []databaseRepo    `yaml:"repositories"`
 }
 
 func (d *database) fill() error {
@@ -46,12 +49,9 @@ func (d *database) getrepopath(url string) (string, error) {
 		}
 	}
 
-	return "", errors.New("no such repository")
+	return "", errors.New("No such repository")
 }
 
 func (d *database) addRepo(url string, path string) {
-	d.Repositories = append(d.Repositories, struct {
-		Url  string `yaml:"url"`
-		Path string `yaml:"localpath"`
-	}{url, path})
+	d.Repositories = append(d.Repositories, databaseRepo{url, path})
 }

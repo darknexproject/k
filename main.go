@@ -30,5 +30,6 @@ func main() {
 		root,
 		cli.Tree(help),
 		cli.Tree(sync),
-	).Run(os.Args[1:]))
+		cli.Tree(install),
+	).Run(os.Args[1:2]))
 }
